@@ -50,7 +50,7 @@ fn delete_frame(number_of_frames: u32) {
     }
 }
 
-pub fn video_from_generating_img(frame_rate: u32, number_of_frame: u32) -> std::io::Result<()> {
+pub fn video_from_generating_img(frame_rate: u32, number_of_frame: u32) {
     let status = Command::new("ffmpeg")
         .args([
            "-framerate", &frame_rate.to_string(),
@@ -60,14 +60,8 @@ pub fn video_from_generating_img(frame_rate: u32, number_of_frame: u32) -> std::
             "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2",
             "video_generation_image.mp4"
         ])
-        .status()?;
-
-    if status.success() {
-        println!("Video generated!");
-        delete_frame(number_of_frame);
-    } else {
-        eprintln!("Error: Video generation failed!");
-    }
-
-    Ok(())
+        .status();
+    
+    println!("Video generated!");
+    delete_frame(number_of_frame);
 }
