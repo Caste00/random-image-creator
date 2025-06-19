@@ -3,19 +3,17 @@ use image::{DynamicImage, Rgba, RgbaImage};
 use imageproc::drawing::{draw_filled_circle_mut, Canvas};
 
 pub struct RandomCircle {
-    original_img: DynamicImage,
     pub img_draw: RgbaImage,
     color: image::Rgba<u8>,
     position: (i32, i32),
 }
 
 impl RandomCircle {
-    pub fn new(original_img: DynamicImage) -> Self {
+    pub fn new(original_img: &RgbaImage) -> Self {
         let (img_width, img_height) = original_img.dimensions();
-        let img_draw = original_img.clone().into_rgba8();
+        let img_draw = original_img.clone();
 
         Self {
-            original_img,
             img_draw,
             color: Self::random_color(),
             position: Self::random_position(img_width, img_height)
@@ -43,13 +41,13 @@ impl RandomCircle {
 
         draw_filled_circle_mut(&mut self.img_draw, self.position, radius, self.color);
     }
-    
+
     pub fn get_img(&self) -> &RgbaImage {
         &self.img_draw
     }
 
     pub fn save_image(&self) {
-        self.img_draw.save("img_draw.jpg").expect("Error: i could not save the image");
+        self.img_draw.save("img_draw.png").expect("Error: I could not save the image");
     }
 }
 
