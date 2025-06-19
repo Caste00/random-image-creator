@@ -1,3 +1,4 @@
+use std::process::Command;
 use image::{DynamicImage, Rgba, RgbaImage};
 use crate::random_shape::RandomCircle;
 use crate::pixels_comparison::img_value;
@@ -8,7 +9,7 @@ fn starting_image(dimension: (u32, u32)) {
     blank_img.save("start_img.png").expect("Error: I could not create a white image");
 }
 
-fn generating_one_image(original_img: &DynamicImage, img_draw: &RgbaImage, iteration: u32) -> RandomCircle {
+fn generating_one_image(original_img: &DynamicImage, img_draw: &RgbaImage, iteration: u32, number_frame: u32) -> RandomCircle {
     let mut best_fit_image: RandomCircle = RandomCircle::new(img_draw);
     let mut best_value = u32::MAX;
 
@@ -22,6 +23,7 @@ fn generating_one_image(original_img: &DynamicImage, img_draw: &RgbaImage, itera
         }
     }
 
+    best_fit_image.save_image(&format!("frames/frame{}.png", number_frame));
     best_fit_image
 }
 
@@ -31,11 +33,41 @@ pub fn generating_image(path_original_img: &str, iteration_for_one_img: u32, ite
     starting_image(dimension);
     let mut canvas = image::open("start_img.png").expect("Error: I could not create a canvas").to_rgba8();
 
-    for _ in 0..iteration_img {
-        let best_image = generating_one_image(&original_img, &canvas, iteration_for_one_img);
+    for i in 0..iteration_img {
+        let best_image = generating_one_image(&original_img, &canvas, iteration_for_one_img, i as u32);
         canvas = best_image.get_img().clone();
     }
 
+    std::fs::remove_file("start_img.png").expect("Error: I could not remove the start image");
     canvas.save("final_image.png").expect("Error: I could not save the final image");
-    println!("Final image created!");
+
+    println!("Image generated successfully!");
+}
+
+fn delete_frame(number_of_frames: u32) {
+    for i in 0..number_of_frames {
+        std::fs::remove_file(format!("frames/frame{}.png", i));
+    }
+}
+
+pub fn video_from_generating_img(frame_rate: u32, number_of_frame: u32) -> std::io::Result<()> {
+    let status = Command::new("ffmpeg")
+        .args([
+           "-framerate", &frame_rate.to_string(),
+            "-i", "frames/frame%d.png",
+            "-c:v", "libx264",
+            "-pix_fmt", "yuv420p",
+            "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2",
+            "video_generation_image.mp4"
+        ])
+        .status()?;
+
+    if status.success() {
+        println!("Video generated!");
+        delete_frame(number_of_frame);
+    } else {
+        eprintln!("Error: Video generation failed!");
+    }
+
+    Ok(())
 }
