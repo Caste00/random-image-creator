@@ -1,2 +1,2 @@
-Da modificare: 
-tengo il punteggio del canvas, appena genero un immagine con punteggio migliore, cioè che migliora il canvas fermo il processo e la salvo
+TODO: 
+la funzione salva tutte le immagini per il video nonostante queste non vengano usate per la generazione dell'immagine finale, salvare solo le immagini che vengono usate per l'immagine finale
