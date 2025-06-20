@@ -29,18 +29,20 @@ fn generating_one_image(original_img: &DynamicImage, img_draw: &RgbaImage, itera
     (best_fit_image, value)
 }
 
-pub fn generating_image(path_original_img: &str, iteration_for_one_img: u32, iteration_img: u32) {
+pub fn generating_image(path_original_img: &str, iteration_for_one_img: u32, iteration_img: u32) -> u32 {
     let original_img = image::open(path_original_img).expect("Error: I could not open the image");
     let dimension = (original_img.width(), original_img.height());
     starting_image(dimension);
     let mut canvas = image::open("start_img.png").expect("Error: I could not create a canvas").to_rgba8();
     let mut old_value = u32::MAX;
+    let mut number_of_frames = 0;
 
     for i in 0..iteration_img {
         let best_image = generating_one_image(&original_img, &canvas, iteration_for_one_img, i as u32);
         if best_image.1 < old_value {
             print_percentage(iteration_img, i);
             canvas = best_image.0.get_img().clone();
+            number_of_frames += 1;
         }
     }
 
@@ -48,6 +50,7 @@ pub fn generating_image(path_original_img: &str, iteration_for_one_img: u32, ite
     canvas.save("final_image.png").expect("Error: I could not save the final image");
 
     println!("Image generated successfully!");
+    number_of_frames
 }
 
 // versione dove si termina la generazione alla prima nuova immagine migliore della precedente, ferma tutto quando in n interazioni non ha generato una sola immagine migliore
