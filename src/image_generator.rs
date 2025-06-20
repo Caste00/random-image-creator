@@ -22,7 +22,7 @@ fn generating_one_image(original_img: &DynamicImage, img_draw: &RgbaImage, itera
             best_value = value;
         }
     }
-
+    
     best_fit_image.save_image(&format!("frames/frame{}.png", number_frame));
     best_fit_image
 }
@@ -35,6 +35,7 @@ pub fn generating_image(path_original_img: &str, iteration_for_one_img: u32, ite
 
     for i in 0..iteration_img {
         let best_image = generating_one_image(&original_img, &canvas, iteration_for_one_img, i as u32);
+        print_percentage(iteration_img, i);
         canvas = best_image.get_img().clone();
     }
 
@@ -42,6 +43,11 @@ pub fn generating_image(path_original_img: &str, iteration_for_one_img: u32, ite
     canvas.save("final_image.png").expect("Error: I could not save the final image");
 
     println!("Image generated successfully!");
+}
+
+fn print_percentage(final_frame: u32, current_frame: u32) {
+    let value = 100f32 * current_frame as f32 / final_frame as f32;
+    println!("percentage: {:.2}", value)
 }
 
 fn delete_frame(number_of_frames: u32) {
