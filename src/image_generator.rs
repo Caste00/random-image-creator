@@ -47,6 +47,47 @@ pub fn generating_image(path_original_img: &str, iteration_for_one_img: u32, ite
     println!("Image generated successfully!");
 }
 
+// versione dove si termina la generazione alla prima nuova immagine migliore della precedente, ferma tutto quando in n interazioni non ha generato una sola immagine migliore
+fn generating_one_better_image(original_img: &DynamicImage, img_draw: &RgbaImage, max_iteration: u32, number_frame: u32, old_value: u32) -> Option<(RandomCircle, u32)> {
+    for _ in 0..max_iteration {
+        let mut random_img = RandomCircle::new(img_draw);
+        random_img.draw_shape();
+        let value = img_value(original_img, random_img.get_img());
+        if value < old_value {
+            random_img.save_image(&format!("frames/frame{}.png", number_frame));
+            return Some((random_img, value));
+        }
+    }
+    None
+}
+
+pub fn generating_first_best_image(path_original_img: &str, iteration_for_one_img: u32) -> u32 {
+    let original_img = image::open(path_original_img).expect("Error: I could not open the image");
+    let dimension = (original_img.width(), original_img.height());
+    starting_image(dimension);
+    let mut canvas = image::open("start_img.png").expect("Error: I could not create a canvas").to_rgba8();
+    let mut old_value = u32::MAX;
+    let mut i = 0;
+
+    loop {
+        let img_data = generating_one_better_image(&original_img, &canvas, iteration_for_one_img, i, old_value);
+        match img_data {
+            Some((random_img, value)) => {
+                canvas = random_img.get_img().clone();
+                old_value = value;
+                i += 1;
+            },
+            None => break,
+        }
+    }
+
+    std::fs::remove_file("start_img.png").expect("Error: I could not remove the start image");
+    canvas.save("final_image.png").expect("Error: I could not save the final image");
+
+    println!("Image generated successfully!");
+    i
+}
+
 fn print_percentage(final_frame: u32, current_frame: u32) {
     let value = 100f32 * current_frame as f32 / final_frame as f32;
     print!("\rpercentage: {:.2}%", value);
@@ -70,7 +111,7 @@ pub fn video_from_generating_img(frame_rate: u32, number_of_frame: u32) {
             "video_generation_image.mp4"
         ])
         .status();
-    
+
     println!("Video generated!");
     delete_frame(number_of_frame);
 }
