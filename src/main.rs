@@ -22,6 +22,7 @@ fn main() {
 
     // genera un'immagine ma gli si deve dare il numero di iterazioni per ogni immagine e il numero di frame (usa il multithread sulle immagini
     let number_of_frames = generating_image(&img_template_path.trim(), 5000, number_of_iterations);
+    println!("number of frames: {}", number_of_frames);
     video_from_generating_img(60, number_of_frames);
 
     // genera un'immagine prendendo la prima imamgine migliore, termina quando non riesce a migliorarla generando n immagini, non è multithread

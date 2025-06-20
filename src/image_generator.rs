@@ -25,7 +25,6 @@ fn generating_one_image(original_img: &DynamicImage, img_draw: &RgbaImage, itera
         .expect("Error: al least one shape should be generated");
 
     let (best_fit_image, value) = best;
-    best_fit_image.save_image(&format!("frames/frame{}.png", number_frame));
     (best_fit_image, value)
 }
 
@@ -39,9 +38,10 @@ pub fn generating_image(path_original_img: &str, iteration_for_one_img: u32, ite
 
     for i in 0..iteration_img {
         let best_image = generating_one_image(&original_img, &canvas, iteration_for_one_img, i as u32);
+        print_percentage(iteration_img, i);
         if best_image.1 < old_value {
-            print_percentage(iteration_img, i);
             canvas = best_image.0.get_img().clone();
+            best_image.0.save_image(&format!("frames/frame{}.png", number_of_frames));
             number_of_frames += 1;
         }
     }
