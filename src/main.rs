@@ -14,10 +14,11 @@ fn main() {
     io::stdin().read_line(&mut img_template_path).expect("Failed to read input");
 
     // genera un'immagine ma gli si deve dare il numero di iterazioni per ogni immagine e il numero di frame (usa il multithread sulle immagini
-    //generating_image(&img_template_path.trim(), 5000, 5000);
-    //video_from_generating_img(60, 5000);
+    generating_image(&img_template_path.trim(), 5000, 5000);
+    video_from_generating_img(60, 5000);
     
     // genera un'immagine prendendo la prima imamgine migliore, termina quando non riesce a migliorarla generando n immagini, non è multithread
-    let frame = generating_first_best_image(&img_template_path.trim(), 1000);
-    video_from_generating_img(60, frame);
+    // la generazione è peggiore, dura molto meno
+    //let frame = generating_first_best_image(&img_template_path.trim(), 5000);
+    //video_from_generating_img(60, frame);
 }
