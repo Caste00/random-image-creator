@@ -47,7 +47,7 @@ pub fn generating_image(path_original_img: &str, iteration_for_one_img: u32, ite
 
 fn print_percentage(final_frame: u32, current_frame: u32) {
     let value = 100f32 * current_frame as f32 / final_frame as f32;
-    println!("percentage: {:.2}", value)
+    println!("percentage: {:.2} %", value)
 }
 
 fn delete_frame(number_of_frames: u32) {
