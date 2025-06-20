@@ -22,7 +22,7 @@ fn generating_one_image(original_img: &DynamicImage, img_draw: &RgbaImage, itera
             (random_img, value)
         })
         .min_by_key(|(_, value)| *value)
-        .expect("Error: al least one shape sohuld be generated");
+        .expect("Error: al least one shape should be generated");
 
     let (best_fit_image, _) = best;
     best_fit_image.save_image(&format!("frames/frame{}.png", number_frame));
