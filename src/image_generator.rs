@@ -1,4 +1,7 @@
+use std::io;
+use std::io::Write;
 use std::process::Command;
+use rayon::prelude::*;
 use image::{DynamicImage, Rgba, RgbaImage};
 use crate::random_shape::RandomCircle;
 use crate::pixels_comparison::img_value;
@@ -10,19 +13,18 @@ fn starting_image(dimension: (u32, u32)) {
 }
 
 fn generating_one_image(original_img: &DynamicImage, img_draw: &RgbaImage, iteration: u32, number_frame: u32) -> RandomCircle {
-    let mut best_fit_image: RandomCircle = RandomCircle::new(img_draw);
-    let mut best_value = u32::MAX;
+    let best = (0..iteration)
+        .into_par_iter()
+        .map(|_| {
+            let mut random_img = RandomCircle::new(img_draw);
+            random_img.draw_shape();
+            let value = img_value(original_img, random_img.get_img());
+            (random_img, value)
+        })
+        .min_by_key(|(_, value)| *value)
+        .expect("Error: al least one shape sohuld be generated");
 
-    for _ in 0..iteration {
-        let mut random_img = RandomCircle::new(img_draw);
-        random_img.draw_shape();
-        let value = img_value(original_img, random_img.get_img());
-        if value < best_value {
-            best_fit_image = random_img;
-            best_value = value;
-        }
-    }
-    
+    let (best_fit_image, _) = best;
     best_fit_image.save_image(&format!("frames/frame{}.png", number_frame));
     best_fit_image
 }
@@ -47,12 +49,13 @@ pub fn generating_image(path_original_img: &str, iteration_for_one_img: u32, ite
 
 fn print_percentage(final_frame: u32, current_frame: u32) {
     let value = 100f32 * current_frame as f32 / final_frame as f32;
-    println!("percentage: {:.2} %", value)
+    print!("\rpercentage: {:.2}%", value);
+    io::stdout().flush().unwrap();
 }
 
 fn delete_frame(number_of_frames: u32) {
     for i in 0..number_of_frames {
-        std::fs::remove_file(format!("frames/frame{}.png", i));
+        let _ = std::fs::remove_file(format!("frames/frame{}.png", i));
     }
 }
 
