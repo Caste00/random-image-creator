@@ -1,2 +1,1 @@
-TODO: 
-la funzione salva tutte le immagini per il video nonostante queste non vengano usate per la generazione dell'immagine finale, salvare solo le immagini che vengono usate per l'immagine finale
+Data un immagine ne genera una creando una serie di cerchi di forma, colore e posizione casuale e scegliendo quello che si avvicina di più all'immagine originale. Genera anche un video della generazione dell'immagine
