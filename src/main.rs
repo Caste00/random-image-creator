@@ -10,6 +10,9 @@ fn main() {
     let mut img_template_path = String::new();
     let mut iterations = String::new();
 
+    // creo la cartella frames per contenerli
+    std::fs::create_dir_all("frames").unwrap();
+    
     print!("path to template: ");
     io::stdout().flush().unwrap();
     io::stdin().read_line(&mut img_template_path).expect("Failed to read input ");
